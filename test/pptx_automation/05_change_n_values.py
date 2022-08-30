@@ -37,16 +37,14 @@ class PowerPointAutoLabel:
         return shape_map
 
 
-    def change_text(self, slide_no, shape_name, target_text):
+    def change_text(self, slide_no, label_map):
         slide = self.ppt_file.slides[slide_no]
         shape_map = self.get_shape_map(slide_no)
-        shape_no = shape_map[shape_name]
-        slide.shapes[shape_no].text = target_text
 
-    def set_label(self, slide_no, label_map):
-        self.ppt_file.slides[slide_no]
+        for shape_name, text in label_map.items():
+            shape_no = shape_map[shape_name]
+            slide.shapes[shape_no].text = text
 
-        pass
 
     def save(self, filename):
         self.ppt_file.save(filename)
@@ -57,8 +55,9 @@ if __name__ == '__main__':
     label_ppt = PowerPointAutoLabel("재물조사라벨.pptx")
     label_ppt.duplicate_n_slides(slide_cnt=9)
     label_ppt.print_slide_shapes(0)
-    label_ppt.get_shape_map(0)
-    label_ppt.change_text(0, "TextBox 13", "모니터1")
+    label_ppt.change_text(0, {"TextBox 13":"모니터1"})
+    label_ppt.change_text(1, {"TextBox 13":"모니터2"})
     label_ppt.print_slide_shapes(0)
-    # label_ppt.save("[Auto]재물조사라벨.pptx")
+    label_ppt.print_slide_shapes(1)
+    label_ppt.save("[Auto]재물조사라벨.pptx")
 
