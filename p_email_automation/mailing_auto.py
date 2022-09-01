@@ -1,6 +1,5 @@
 import datetime
 import smtplib
-from email.message import EmailMessage
 from smtplib import SMTP_SSL
 from pathlib import Path
 from openpyxl import load_workbook
