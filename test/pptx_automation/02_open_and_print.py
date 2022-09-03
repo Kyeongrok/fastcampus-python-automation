@@ -1,5 +1,4 @@
 from pptx import Presentation
-import copy
 
 
 class PowerPointAutoLabel:
@@ -15,8 +14,6 @@ class PowerPointAutoLabel:
             print(f"slide_no:{slide_no}", shape.text)
 
 
-
 if __name__ == '__main__':
     label_ppt = PowerPointAutoLabel("재물조사라벨.pptx")
     label_ppt.print_slide_shapes(0)
-
