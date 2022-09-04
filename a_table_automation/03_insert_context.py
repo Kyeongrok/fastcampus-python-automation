@@ -103,8 +103,6 @@ def insert_context(filename):
     ws.merge_cells('C39:C43')#요일
     ws.merge_cells('F39:F43')#비고
 
-
-    wb.save(filename)
     print('context 생성 완료')
 
 if __name__ == '__main__':
