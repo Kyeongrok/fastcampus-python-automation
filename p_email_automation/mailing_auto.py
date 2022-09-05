@@ -8,6 +8,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.encoders import encode_base64
 from email.header import Header
+from os import getenv
 
 class SendEmail:
     # init은 인스턴스 객체 초기화
@@ -127,8 +128,8 @@ class SendEmail:
 
 
 # #인스턴스 생성
-email = 'hello@world.com'
-password = '12345678'
+email = 'myemail@gmail.com'
+password = getenv('MY_EMAIL_PASSWORD')
 
 es = SendEmail(email, password, 'email_list.xlsx')  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
 # #메소드 호출
