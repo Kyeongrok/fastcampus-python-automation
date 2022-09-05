@@ -2,6 +2,7 @@ from pptx import Presentation
 import copy
 
 from pptx.util import Pt
+import pandas as pd
 
 
 class PowerPointAutoLabel:
@@ -45,7 +46,9 @@ class PowerPointAutoLabel:
 
         for shape_name, text in label_map.items():
             shape_no = shape_map[shape_name]
+            slide.shapes[shape_no].text = text
             tf = slide.shapes[shape_no].text_frame
+            # print('fontsize', tf.paragraphs[0])
             tf.clear()
             p = tf.paragraphs[0]
             run = p.add_run()
@@ -60,11 +63,20 @@ class PowerPointAutoLabel:
 if __name__ == '__main__':
 
     label_ppt = PowerPointAutoLabel("재물조사라벨.pptx")
-    label_ppt.duplicate_n_slides(slide_cnt=9)
     label_ppt.print_slide_shapes(0)
-    label_ppt.change_text(0, {"product_name":"모니터1"}, font_size=44)
-    label_ppt.change_text(1, {"product_name":"모니터2"}, font_size=44)
-    # label_ppt.print_slide_shapes(0)
-    # label_ppt.print_slide_shapes(1)
-    label_ppt.save("[Auto]재물조사라벨.pptx")
+    # label_ppt.change_text(0, {"TextBox 13":"모니터1"}, font_size=44)
+    # label_ppt.change_text(1, {"TextBox 13":"모니터2"}, font_size=44)
+    # # label_ppt.print_slide_shapes(0)
+    # # label_ppt.print_slide_shapes(1)
 
+    df = pd.read_excel("재물목록.xlsx")
+    print(df['product_name'].count())
+    label_ppt.duplicate_n_slides(slide_cnt=df['product_name'].count() - 1)
+    for i, row in df.iterrows():
+        print(i, row['product_name'], row['model_no'])
+        label_map = {
+            "product_name": row['product_name'],
+            "model_no": row["model_no"]
+        }
+        label_ppt.change_text(i, label_map, font_size=44)
+    label_ppt.save("[Auto]재물조사라벨.pptx")

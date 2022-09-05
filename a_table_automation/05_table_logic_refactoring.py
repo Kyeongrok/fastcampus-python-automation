@@ -11,21 +11,19 @@ import calendar
 class WeeklyWorkPlan:
     wb = None
     ws = None
-    filename = '주간업무계획표.xlsx'
     dt_list = []
     days_of_week = []
     start_date = '2022-09-01'
     title = '주간업무계획표'
     manager = '홍길동'
 
-    def __init__(self, filename, start_date, manager, sheet_no=0):
-        self.filename = filename
+    def __init__(self, start_date, manager, n_days=6, sheet_no=0):
         self.wb = Workbook()
         # 현재 활성화 되어있는 워크시트 기본값 1번째
         self.ws = self.wb.worksheets[sheet_no]
         self.start_date = start_date
         self.manager = manager
-        self.set_dates()
+        self.set_dates(n_days)
         self.set_title()
         self.set_table()
         self.style_setting()
@@ -34,8 +32,8 @@ class WeeklyWorkPlan:
         self.wb.save(filename)
         print('엑셀파일 생성 완료')
 
-    def set_dates(self):
-        dt = datetime.strptime(self.start_date, '%Y-%m-%d') + timedelta(days=6)
+    def set_dates(self, days=6):
+        dt = datetime.strptime(self.start_date, '%Y-%m-%d') + timedelta(days=days)
         week = pd.date_range(start=datetime.strptime(self.start_date, '%Y-%m-%d'), end=dt.strftime("%Y%m%d"))
         dt_list = week.strftime("%Y-%m-%d").to_list()
         self.days_of_week = week.strftime("%A").to_list()
@@ -67,62 +65,20 @@ class WeeklyWorkPlan:
 
         ws = self.ws
 
+        # 컬럼명 채우기
         cols_data = ['날짜', '요일', '시간', '일정', '비고']
-
         for col_idx in range(len(cols_data)):
-            # print(col)
             ws.cell(row=8, column=2 + col_idx).value = cols_data[col_idx]
 
-        # 날짜 채우기
-        row_num = 9
-        for week in self.dt_list:
-            ws.cell(row=row_num, column=2).value = week
-            row_num = row_num + 1
-
-        # 요일 채우기
-        v = 9
-        for day in self.days_of_week:
-            ws.cell(row=v, column=3).value = day
-            v = v + 1
-
-        # 행 중간 삽입
-        ws.insert_rows(10, 4)
-        ws.insert_rows(15, 4)
-        ws.insert_rows(20, 4)
-        ws.insert_rows(25, 4)
-        ws.insert_rows(30, 4)
-        ws.insert_rows(35, 4)
-        ws.insert_rows(40, 4)
-
-        # 날짜, 요일, 비고 셀 병합
-
-        ws.merge_cells('B9:B13')  # 날짜
-        ws.merge_cells('C9:C13')  # 요일
-        ws.merge_cells('F9:F13')  # 비고
-
-        ws.merge_cells('B14:B18')  # 날짜
-        ws.merge_cells('C14:C18')  # 요일
-        ws.merge_cells('F14:F18')  # 비고
-
-        ws.merge_cells('B19:B23')  # 날짜
-        ws.merge_cells('C19:C23')  # 요일
-        ws.merge_cells('F19:F23')  # 비고
-
-        ws.merge_cells('B24:B28')  # 날짜
-        ws.merge_cells('C24:C28')  # 요일
-        ws.merge_cells('F24:F28')  # 비고
-
-        ws.merge_cells('B29:B33')  # 날짜
-        ws.merge_cells('C29:C33')  # 요일
-        ws.merge_cells('F29:F33')  # 비고
-
-        ws.merge_cells('B34:B38')  # 날짜
-        ws.merge_cells('C34:C38')  # 요일
-        ws.merge_cells('F34:F38')  # 비고
-
-        ws.merge_cells('B39:B43')  # 날짜
-        ws.merge_cells('C39:C43')  # 요일
-        ws.merge_cells('F39:F43')  # 비고
+        # 날짜, 요일 채우기
+        for i in range(len(self.dt_list)):
+            row_idx = 9 + i * 5
+            ws.cell(row=row_idx, column=2).value = self.dt_list[i]
+            ws.cell(row=row_idx, column=3).value = self.days_of_week[i]
+            # 날짜, 요일, 비고 셀 병합
+            ws.merge_cells(f'B{row_idx}:B{row_idx + 4}')  # 날짜
+            ws.merge_cells(f'C{row_idx}:C{row_idx + 4}')  # 요일
+            ws.merge_cells(f'F{row_idx}:F{row_idx + 4}')  # 비고
 
         print('context 생성 완료')
 
@@ -146,21 +102,17 @@ class WeeklyWorkPlan:
         # color='ff9999', strikethrough=True, underline='single', italic=True
         ws['B5'].font = title_f
 
-        # 칼럼명 폰트 굵게
-        font_range = ws['B8:F8']
-
-        for col in font_range:
+        for col in ws['B8:F8']:
             for cell in col:
+                # 컬럼명 폰트 굵게
                 cell.font = Font(bold=True)
+                # 컬럼명 가운데 정렬
+                cell.alignment = Alignment(horizontal='center', vertical='center')
 
         # 주간업무계획표, 기간 가운데 정렬
         ws['B5'].alignment = Alignment(horizontal='center', vertical='center')
         ws['B6'].alignment = Alignment(horizontal='center', vertical='center')
 
-        # 칼럼명 가운데 정렬
-        for col in font_range:
-            for cell in col:
-                cell.alignment = Alignment(horizontal='center', vertical='center')
 
         # 날짜, 요일 가운데 정렬
         for i in range(9, 40, 5):
@@ -189,7 +141,7 @@ class WeeklyWorkPlan:
                 cell.border = border_thin
 
         # context 영역
-        for col in ws.iter_cols(min_row=8, min_col=2, max_row=43, max_col=6):
+        for col in ws.iter_cols(min_row=8, min_col=2, max_row=len(self.dt_list) * 5 + 8, max_col=6):
             for cell in col:
                 cell.border = border_thin
 
@@ -198,6 +150,5 @@ class WeeklyWorkPlan:
 
 
 if __name__ == '__main__':
-    file_name = '주간업무계획표.xlsx'
-    wwp = WeeklyWorkPlan(file_name, start_date='2022-09-01', manager='김경록')
-    wwp.save(file_name)
+    wwp = WeeklyWorkPlan(start_date='2022-09-01', manager='김경록', n_days=6)
+    wwp.save('주간업무계획표.xlsx')
