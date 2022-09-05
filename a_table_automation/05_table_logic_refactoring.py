@@ -17,13 +17,13 @@ class WeeklyWorkPlan:
     title = '주간업무계획표'
     manager = '홍길동'
 
-    def __init__(self, start_date, manager, sheet_no=0):
+    def __init__(self, start_date, manager, n_days=6, sheet_no=0):
         self.wb = Workbook()
         # 현재 활성화 되어있는 워크시트 기본값 1번째
         self.ws = self.wb.worksheets[sheet_no]
         self.start_date = start_date
         self.manager = manager
-        self.set_dates()
+        self.set_dates(n_days)
         self.set_title()
         self.set_table()
         self.style_setting()
@@ -32,8 +32,8 @@ class WeeklyWorkPlan:
         self.wb.save(filename)
         print('엑셀파일 생성 완료')
 
-    def set_dates(self):
-        dt = datetime.strptime(self.start_date, '%Y-%m-%d') + timedelta(days=6)
+    def set_dates(self, days=6):
+        dt = datetime.strptime(self.start_date, '%Y-%m-%d') + timedelta(days=days)
         week = pd.date_range(start=datetime.strptime(self.start_date, '%Y-%m-%d'), end=dt.strftime("%Y%m%d"))
         dt_list = week.strftime("%Y-%m-%d").to_list()
         self.days_of_week = week.strftime("%A").to_list()
@@ -141,7 +141,7 @@ class WeeklyWorkPlan:
                 cell.border = border_thin
 
         # context 영역
-        for col in ws.iter_cols(min_row=8, min_col=2, max_row=43, max_col=6):
+        for col in ws.iter_cols(min_row=8, min_col=2, max_row=len(self.dt_list) * 5 + 8, max_col=6):
             for cell in col:
                 cell.border = border_thin
 
@@ -150,5 +150,5 @@ class WeeklyWorkPlan:
 
 
 if __name__ == '__main__':
-    wwp = WeeklyWorkPlan(start_date='2022-09-01', manager='김경록')
+    wwp = WeeklyWorkPlan(start_date='2022-09-01', manager='김경록', n_days=6)
     wwp.save('주간업무계획표.xlsx')
