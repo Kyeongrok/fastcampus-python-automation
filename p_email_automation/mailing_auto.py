@@ -119,15 +119,18 @@ class SendEmail:
                 smtp.login(self.id, self.pw)
                 smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
                 smtp.quit()
+
+            # 완료 메시지
+            print("발송 성공")
         else:
             print("메세지 전송 오류 발생")
-        # 완료 메시지
-        print("발송 성공")
 
 
 # #인스턴스 생성
-email = 'hellow@world.com'
-password = '12345678'
+# email = 'hello@world.com'
+# password = '12345678'
+email = 'pauljungho.ham@gmail.com'
+password = 'pwvbybahhkorffkc'
 
 es = SendEmail(email, password, 'email_list.xlsx')  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
 # #메소드 호출
