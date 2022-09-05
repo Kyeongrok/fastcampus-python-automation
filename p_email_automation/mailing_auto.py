@@ -128,7 +128,7 @@ class SendEmail:
 
 
 # #인스턴스 생성
-email = 'myemail@gmail.com'
+email = 'oceanfog1@gmail.com'
 password = getenv('MY_EMAIL_PASSWORD')
 
 es = SendEmail(email, password, 'email_list.xlsx')  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
