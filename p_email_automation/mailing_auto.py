@@ -127,10 +127,8 @@ class SendEmail:
 
 
 # #인스턴스 생성
-# email = 'hello@world.com'
-# password = '12345678'
-email = 'pauljungho.ham@gmail.com'
-password = 'pwvbybahhkorffkc'
+email = 'hello@world.com'
+password = '12345678'
 
 es = SendEmail(email, password, 'email_list.xlsx')  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
 # #메소드 호출
