@@ -1,6 +1,5 @@
 import datetime
 import smtplib
-from smtplib import SMTP_SSL
 from pathlib import Path
 from openpyxl import load_workbook
 from email.mime.text import MIMEText
@@ -10,15 +9,20 @@ from email.encoders import encode_base64
 from email.header import Header
 from os import getenv
 
+
 class SendEmail:
     # init은 인스턴스 객체 초기화
-    def __init__(self, id, pw, df):
+    def __init__(self, id, password):
         # 로그인 계정/pw
         self.id = id
-        self.pw = pw  # 앱비밀번호16자리
-        self.type = id.split('@')[1]
-        # 엑셀파일에서 가져온 정보를 활용해 함수 반복 실행
-        self.df = df
+        self.pw = password  # 앱비밀번호16자리
+        smtp_server_map = {
+            'gmail.com':'smtp.gmail.com',
+            'naver.com':'smtp.naver.com',
+            'outlook.com':'smtp-mail.outlook.com'
+        }
+        self.smtp_server = smtp_server_map[id.split('@')[1]]
+
 
     def email_template(self, text, client_name, manager_name):
         with open('resources/' + text, encoding='UTF-8') as f:
@@ -79,58 +83,34 @@ class SendEmail:
 
         return msg
 
-    def send_email(self):
-        # email_list 실행
-        wb = load_workbook(self.df, data_only=True)
+    def send_emails(self, excel_filename):
+        # 엑셀파일에서 가져온 정보를 활용해 함수 반복 실행
+        wb = load_workbook(excel_filename, data_only=True)
         ws = wb.active
         # read_email_list, for문 안에서 email 발송
         for row in ws.iter_rows(min_row=2):
-            # print(row)
+            print(row)
             msg = self.make_email(row)
-            print(type(msg))
-            self.email_sender(msg, fr=self.id, to=row[0].value)
+            self.send_email(msg, fr=self.id, to=row[0].value)
 
-    def email_sender(self, msg, fr, to):
+    def send_email(self, msg, fr, to):
         # 보내는 사람 로그인 및 smtp 서버로 발송
         # 메일 타입별 서버이름 변경 gmail, naver, outlook 아니면 오류 메세지 띄우게 설정
-        if self.type == "gmail.com":
-            # with SMTP_SSL("smtp.gmail.com", 465) as smtp:
-            #     smtp.login(self.id, self.pw)
-            #     smtp.send_message(msg.as_string())
-            with smtplib.SMTP("smtp.gmail.com", 587) as smtp:
-                smtp.set_debuglevel(True)
-                smtp.ehlo()
-                smtp.starttls()
-                smtp.login(self.id, self.pw)
-                smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
-                smtp.quit()
-        elif self.type == "naver.com":
-            with smtplib.SMTP("smtp.naver.com", 587) as smtp:
-                smtp.set_debuglevel(True)
-                smtp.ehlo()
-                smtp.starttls()
-                smtp.login(self.id, self.pw)
-                smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
-                smtp.quit()
-        elif self.type == "outlook.com":
-            with smtplib.SMTP("smtp-mail.outlook.com", 587) as smtp:
-                smtp.set_debuglevel(True)
-                smtp.ehlo()
-                smtp.starttls()
-                smtp.login(self.id, self.pw)
-                smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
-                smtp.quit()
-
+        with smtplib.SMTP(self.smtp_server, 587) as smtp:
+            smtp.set_debuglevel(True)
+            smtp.ehlo()
+            smtp.starttls()
+            smtp.login(self.id, self.pw)
+            smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
+            smtp.quit()
             # 완료 메시지
             print("발송 성공")
-        else:
-            print("메세지 전송 오류 발생")
 
 
 # #인스턴스 생성
 email = 'oceanfog1@gmail.com'
 password = getenv('MY_EMAIL_PASSWORD')
 
-es = SendEmail(email, password, 'email_list.xlsx')  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
+es = SendEmail(email, password)  # 생성된 이메일리스트 따로 입력하지 않아도 자동입력, 계정 pw만 외부에서 입력받기
 # #메소드 호출
-es.send_email()
+es.send_emails('email_list.xlsx')

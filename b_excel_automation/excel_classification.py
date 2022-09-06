@@ -8,14 +8,14 @@ from openpyxl.styles import Alignment, Font, Border, Side, PatternFill #엑셀 �
 class ClassificationExcel:
     #Constructor
     def __init__(self, order_xlsx_filename, partner_info_xlsx_filename):
-        self.df = order_xlsx_filename #주문파일(1page)
+        self.order_xlsx_filename = order_xlsx_filename #주문파일(1page)
         self.df2 = partner_info_xlsx_filename #파트너사정보파일
 
     # brands, partners 리스트, dict 만드는 기능
     def make_product_dict(self):
 
         # sendRequest 불러오기
-        df = pd.read_excel(self.df, engine='openpyxl')
+        df = pd.read_excel(self.order_xlsx_filename, engine='openpyxl')
         # print(df)
 
         # df파일 1번째 행을 칼럼으로 지정
