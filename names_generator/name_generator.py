@@ -48,7 +48,8 @@ class NameGenerator:
 
     how_many = 100
 
-    def __init__(self):
+    def __init__(self, how_many=100):
+        self.how_many = how_many
         self.words = self.get_lines('words.txt')
         self.brand_names = self.get_lines('brand_names.txt')
 
@@ -84,9 +85,11 @@ class NameGenerator:
         return names
 
     def gen_company_name(self, n=100):
+        """ 회사 이름을 n개 생성 합니다."""
         return self.generate(n)
 
     def append_position(self, names):
+        """ 텍스트 뒤에 직급을 추가 합니다."""
         positions = ['사원'] * 5 + ['주임'] * 6 + ['대리'] * 7 + ['과장'] * 6 + ['차장'] * 3 + ['부장'] * 2 + ['이사'] * 1
         r = []
         for name in names:
@@ -99,7 +102,8 @@ class NameGenerator:
         names = self.generate(n, ' ')
         return names
 
-    def phone_numbers(self, n=100):
+    def gen_phone_numbers(self, n=100):
+        """ 중복되지 않은 핸드폰 번호 n개를 생성 합니다."""
         result = set()
         # print(postfixs)
         cnt = 0
@@ -109,16 +113,17 @@ class NameGenerator:
         return result
 
     def emails(self, n=100):
+        """ 중복되지 않은 이메일 n개를 생성 합니다."""
         self.prefixs = self.words
         self.postfixs = self.email_hosts
         names = self.generate(n=n, separator='_xxxx@')
         return names
 
-    def gen_product_no(self):
+    def gen_product_no(self, prefix='A', fr=500000, to=900000):
         r = set()
 
         while len(r) < self.how_many:
-            r.add(randrange(500000, 900000))
+            r.add(f'{prefix}{randrange(fr, to)}')
         return r
 
 
@@ -128,8 +133,8 @@ if __name__ == '__main__':
     # user_names = ng.gen_employee_name()
     # product_names = ng.gen_product_name()
     # names = ng.gen_korean_name()
-    # phone_numbers = ng.phone_numbers()
+    # phone_numbers = ng.gen_phone_numbers()
 
-    li = ng.gen_product_name()
+    li = ng.brand_names
     for item in li:
         print(item)
