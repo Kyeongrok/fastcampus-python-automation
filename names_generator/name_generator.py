@@ -1,4 +1,5 @@
 from random import randrange, sample
+import re
 
 class NameGenerator:
     prefixs = {'파인', '이클래스', '심온', '다온', '탑', '화이트', '그레이스', '빈센트', '원진', '오케이', '다인', '프라임', '을지', '에이스', '그랑', '큐원', '라임',
@@ -39,15 +40,24 @@ class NameGenerator:
         '오트밀 1.2kg','젖병 세정제 450ml','국탕용 어묵 종합','디데이 달력','캐주얼 반바지 회색','무선 구강 세정기','스판 요가 팬츠 L','유기농 초코크런치 400g','클랜징 폼 거품 제조 용기','햇 양파 1.2kg','햇감자 1kg','손질 오징어 3마리','깐마늘 300g 1봉','콩나물 500g 1봉','호주산 모듬 다짐육','국물용팩 300g','참기름 430ml','케틀벨 4kg','PC 본체 케이스 블랙','사파리 모자','책상 160 * 60','쿠션 55*55','매쉬 의자'
     }
 
-    brand_names = {
-        '레이튼', '로하스', '흄', '리스너', '베아', '차우', '무치', '유니버스', '노아', '키텐', '페어리', '게이트', '오픈도어스', '슈가', '델린', '티코스', '시저', '빈', '제나',
-        '퓨린', '씨네', '케이트', '본아페티', '커트넥', '버드', '린스토리', '타이', '유스페이스', '피어스', '치트타임', '나이트헌트', '미스틱', '누들링', '트라이', '엑스', '네임드',
-        '무브', '어라운드', '북스토어', '맨파워', '애니웨이', '시퀀스', '캑터스', '앵커', '베이직파워', '네이비', '와이유씨', '퍼플유저', '보브', '마운틴', '쓰리윈도', '핸들',
-        '뷰티풀페인트', '로프', '차일디쉬', '이노쉐이드', '룬', '세컨', '이솝', '스마일', '푸름', '헤라', '체어스', '플레임', '리디', '코멧', '시즈니', '워터폴', '브이아이', '리빙', '핑거스',
-        '선플라워', '메이플', '링크스페이스', '베얼리', '드림타워', '플레이온', '데톨', '맨숀', '레나치오', '퍼포먼스', '투웨이',
-        '아이콘', '신사', '호크', '윈드밀', '터틀', '레이', '캐스트', '피노키오', '벤자민', '다이브', '칙스', '케이퍼', '오아르',
-        '넘버원', '위켄드', '큐시티', '롱프라이데이', '모토'
-                   }
+    brand_names = {}
+
+    email_hosts = {
+        'gmail.com', 'naver.com'
+    }
+
+    how_many = 100
+
+    def __init__(self):
+        self.words = self.get_lines('words.txt')
+        self.brand_names = self.get_lines('brand_names.txt')
+
+    def get_lines(self, filename):
+        r = set()
+        with open(filename, encoding="utf-8") as f:
+            for line in f.readlines():
+                r.add(line.replace("\n", ""))
+        return r
 
     def generate(self, n=100, separator=''):
         result = set()
@@ -61,19 +71,19 @@ class NameGenerator:
         print('try:', cnt)
         return result
 
-    def generate_employee_name(self, n=100):
+    def gen_employee_name(self, n=100):
         self.prefixs = self.last_name
         self.postfixs = self.first_name
         names = self.generate(n)
         return self.append_position(names)
 
-    def generate_korean_name(self, n=100):
+    def gen_korean_name(self, n=100):
         self.prefixs = self.last_name
         self.postfixs = self.first_name
         names = self.generate(n)
         return names
 
-    def generate_company_name(self, n=100):
+    def gen_company_name(self, n=100):
         return self.generate(n)
 
     def append_position(self, names):
@@ -83,7 +93,7 @@ class NameGenerator:
             r.append(f'{name} {positions[randrange(len(positions))]}')
         return r
 
-    def generate_product_name(self, n=100):
+    def gen_product_name(self, n=100):
         self.prefixs = self.brand_names
         self.postfixs = self.product_names
         names = self.generate(n, ' ')
@@ -98,14 +108,28 @@ class NameGenerator:
             cnt += 1
         return result
 
+    def emails(self, n=100):
+        self.prefixs = self.words
+        self.postfixs = self.email_hosts
+        names = self.generate(n=n, separator='_xxxx@')
+        return names
+
+    def gen_product_no(self):
+        r = set()
+
+        while len(r) < self.how_many:
+            r.add(randrange(500000, 900000))
+        return r
+
+
 if __name__ == '__main__':
     ng = NameGenerator()
-    company_names = ng.generate_company_name()
-    user_names = ng.generate_employee_name()
-    product_names = ng.generate_product_name()
-    names = ng.generate_korean_name()
-    phone_numbers = ng.phone_numbers()
+    # company_names = ng.gen_company_name()
+    # user_names = ng.gen_employee_name()
+    # product_names = ng.gen_product_name()
+    # names = ng.gen_korean_name()
+    # phone_numbers = ng.phone_numbers()
 
-    li = phone_numbers
+    li = ng.gen_product_name()
     for item in li:
         print(item)

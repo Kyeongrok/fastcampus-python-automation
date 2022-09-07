@@ -10,13 +10,13 @@ class ClassificationExcel:
     def __init__(self, order_xlsx_filename, partner_info_xlsx_filename):
         self.order_xlsx_filename = order_xlsx_filename #주문파일(1page)
         self.df2 = partner_info_xlsx_filename #파트너사정보파일
+        self.path = './data\\'
 
     # brands, partners 리스트, dict 만드는 기능
     def make_product_dict(self):
 
         # sendRequest 불러오기
         df = pd.read_excel(self.order_xlsx_filename, engine='openpyxl')
-        # print(df)
 
         # df파일 1번째 행을 칼럼으로 지정
         processed_df = df.rename(columns=df.iloc[1])
@@ -40,15 +40,14 @@ class ClassificationExcel:
         # baseus = processed_df.loc[df2['상품명'].str.contains('베이스어스')]
         # print(baseus['상품명'])
 
-        self.processd_df = processed_df #가공한 df파일, #find_product에서 활용
+        self.processed_df = processed_df #가공한 df파일, #find_product에서 활용
+
 
         # 브랜드/업체명 파일 불러오기
         partners_name = pd.read_excel(self.df2, engine='openpyxl')
-        # print(partners_name)
 
         # '브랜드' 칼럼 결측치있는 행 전체 제거
         partners_name = partners_name.dropna(axis = 'index', how='any', subset=['브랜드'])
-        # print(partners_name)
 
         # 브랜드 list 생성
         brands_parsing = partners_name['브랜드'].str.split('/')
@@ -58,11 +57,6 @@ class ClassificationExcel:
         # 업체명 list 생성
         partners = partners_name['업체명'].tolist()
 
-        # print(brands)
-        # print(partners)
-        # print(len(brands))#115개
-        # print(len(partners))#115개
-
         # 결측치 확인
         # print(partners_name[partners_name.partners.isnull()])
 
@@ -71,10 +65,8 @@ class ClassificationExcel:
         # for key in partners_dict:
         # print(key, ':', partners_dict[key])# key,value 출력
 
-        # print(partners_dict)
-
-        self.brands = brands#find_product에서 활용
-        self.partners = partners#find_product에서 활용
+        self.brands = brands # find_product에서 활용
+        self.partners = partners # find_product에서 활용
 
     # 각 상품명에 brands 요소가 있는지 모두 확인하여 partners 이름으로 각각 excel 저장 기능
     def find_product(self):
@@ -83,15 +75,14 @@ class ClassificationExcel:
         now = datetime.datetime.now()  # 지금시간
         self.nowToday = now.strftime('%Y-%m-%d')  # 일자
 
-        self.path = 'data\\'
-        for i, row in self.processd_df.iterrows():#엑셀 주문 건수 갯수만큼 돌리기
+        for i, row in self.processed_df.iterrows():#엑셀 주문 건수 갯수만큼 돌리기
            # print(row)#모든 주문건수 출력(세로)
            # 문제: 2가지 브랜드가 들어간 업체명 추출이 안됨, 각 브랜드 주문건수 1건만 들어감
            for j in range(len(self.brands)):#brands의 갯수만큼 돌리기
                if len(self.brands[j]) ==1:#브랜드명 요소가 1개이면
                    # if row['상품명'].startswith(self.brands[j][0]):
                    if self.brands[j][0] in row['상품명']:  # 전체 df 상품명에서 brands 값명이 있으면, 더클래스가 '차바치 더클래스'가 있는 주문을 제외하고
-                       first_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][0])]
+                       first_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][0])]
                        print(first_df)#여기까지는 모든 data가 나옴
                        if len(first_df) !=0:  # df가 비어 있지 않으면
                            self.partners[j] == first_df #파트너사 변수와 1:1 맵핑
@@ -100,8 +91,8 @@ class ClassificationExcel:
                elif len(self.brands[j]) ==2:#브랜드 요소가 2개이상이면
                    # print(self.brands[j][1])  # 리스트의 두번째 요소만 뽑기
                    if self.brands[j][0] in row['상품명'] or self.brands[j][1] in row['상품명']:  # 전체 df 상품명에서 brands 값명이 있으면
-                       second_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][0])]#0번째 요소 일치한 df 출력
-                       third_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][1])]#1번째 요소 일치한 df 출력
+                       second_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][0])]#0번째 요소 일치한 df 출력
+                       third_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][1])]#1번째 요소 일치한 df 출력
                        sum_df = pd.concat([second_df, third_df]) #2개 데이터프레임 병합
                        if len(sum_df) != 0:  # df가 비어 있지 않으면
                            self.partners[j] == sum_df  # 파트너사 변수와 1:1 맵핑
@@ -110,9 +101,9 @@ class ClassificationExcel:
                elif len(self.brands[j]) ==3:#브랜드 요소가 3개이상이면
                #     print(self.brands[j][2])  # 리스트의 세번째 요소만 뽑기
                    if self.brands[j][0] in row['상품명'] or self.brands[j][1] in row['상품명'] or self.brands[j][2] in row['상품명']:  # 전체 df 상품명에서 brands 값명이 있으면
-                       four_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][0])]#0번째 요소 일치한 df 출력
-                       fifth_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][1])]#1번째 요소 일치한 df 출력
-                       sixth_df = self.processd_df.loc[self.processd_df['상품명'].str.startswith(self.brands[j][2])]#2번째 요소 일치한 df 출력
+                       four_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][0])]#0번째 요소 일치한 df 출력
+                       fifth_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][1])]#1번째 요소 일치한 df 출력
+                       sixth_df = self.processed_df.loc[self.processed_df['상품명'].str.startswith(self.brands[j][2])]#2번째 요소 일치한 df 출력
                        sum2_df = pd.concat([four_df, fifth_df, sixth_df])#3개 데이터프레임 병합
                        print(sum2_df)
                        if len(sum2_df) != 0:  # df가 비어 있지 않으면
@@ -179,5 +170,5 @@ CE = ClassificationExcel('주문목록20221112.xlsx', '벤더리스트.xlsx')#se
 #
 # #메소드 호출
 CE.make_product_dict()
-# CE.find_product()
-# CE.set_excel_form()
+CE.find_product()
+CE.set_excel_form()
