@@ -82,7 +82,7 @@ class ClassificationExcel:
             ws['A1'].value = f'발송요청내역 [총 {m_row}건, 1페이지] {now_today}'  # 전체 행 개수를 세서 num 변수에 삽입
             f = Font(size=11, bold=True)  # 1행 폰트 크기 11, bold
             ws['A1'].font = f
-            # # A열 설정
+            # # A:U열 설정
             ws.merge_cells('A1:U1')  # 셀병합
             ws['A1'].alignment = Alignment(horizontal='left')  # 왼쪽 정렬
             f2 = Font(size=9)
