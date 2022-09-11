@@ -78,6 +78,17 @@ class ClassificationExcel:
         ws.merge_cells('A1:U1')  # 셀병합
         ws['A1'].alignment = Alignment(horizontal='left')  # 왼쪽 정렬
 
+        # 열 너비 설정
+        width_17 = [1, 21]
+        width_38 = [9, 10, 20]
+        width_12 = [2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        for col in width_17:
+            ws.column_dimensions[get_column_letter(col)].width = 17  # A, U, 15로 하면 14.38이 됨
+        for col in width_38:
+            ws.column_dimensions[get_column_letter(col)].width = 38
+        for col in width_12:
+            ws.column_dimensions[get_column_letter(col)].width = 12
+
         # 3행 column명
         for row in ws.iter_rows(min_row=3, max_row=3):
             for cell in row:
@@ -97,16 +108,6 @@ class ClassificationExcel:
                     cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
                                          bottom=Side(style='thin'))
 
-        # 열 너비 설정
-        width_17 = [1, 21]
-        width_38 = [9, 10, 20]
-        width_12 = [2, 3, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17, 18, 19]
-        for col in width_17:
-            ws.column_dimensions[get_column_letter(col)].width = 17  # A, U, 15로 하면 14.38이 됨
-        for col in width_38:
-            ws.column_dimensions[get_column_letter(col)].width = 38
-        for col in width_12:
-            ws.column_dimensions[get_column_letter(col)].width = 12
         wb.save(file_name)
         print(f'{file_name} 엑셀폼 변경 완료')
 
