@@ -119,8 +119,8 @@ class ClassificationExcel:
 
 
 # 인스턴스 생성
-CE = ClassificationExcel('주문목록20221112.xlsx', '벤더리스트.xlsx')
+CE = ClassificationExcel('주문목록20221112.xlsx', '파트너목록.xlsx')
 
 # #메소드 호출
 CE.classify()
-# CE.set_excel_form()
+CE.set_excel_form()

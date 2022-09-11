@@ -112,7 +112,7 @@ class NameGenerator:
             cnt += 1
         return result
 
-    def emails(self, n=100):
+    def gen_emails(self, n=100):
         """ 중복되지 않은 이메일 n개를 생성 합니다."""
         self.prefixs = self.words
         self.postfixs = self.email_hosts
@@ -129,12 +129,12 @@ class NameGenerator:
 
 if __name__ == '__main__':
     ng = NameGenerator()
-    # company_names = ng.gen_company_name()
-    # user_names = ng.gen_employee_name()
     # product_names = ng.gen_product_name()
     # names = ng.gen_korean_name()
     # phone_numbers = ng.gen_phone_numbers()
 
-    li = ng.brand_names
+    # li = ng.gen_company_name(108)
+    # li = ng.gen_employee_name(108)
+    li = ng.gen_emails(216)
     for item in li:
         print(item)
