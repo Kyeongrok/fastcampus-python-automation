@@ -18,13 +18,16 @@ class EmailSender:
         self.password = password
         self.smtp_server = self.smtp_server_map[id.split('@')[1]]
 
-    def send_email(self, msg, fr, to):
+    def send_email(self, to, cc, title, text):
+        fr = self.id
+        msg = es.make_email(to, cc, title, text)
+        print(self.smtp_server)
         with smtplib.SMTP(self.smtp_server, 587) as smtp:
             # smtp.set_debuglevel(True)
             smtp.ehlo()
             smtp.starttls()
             smtp.login(self.id, self.password)
-            smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg)
+            smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
             smtp.quit()
 
         print('발송 성공')
@@ -43,12 +46,11 @@ class EmailSender:
         # 본문 구성
         msg.set_content(text)
 
-        print('발송 성공')
-
+        return msg
 
 if __name__ == '__main__':
     id = 'oceanfog1@gmail.com'
+    id = 'oceanfog@naver.com'
     password = getenv('MY_EMAIL_PASSWORD')
     es = EmailSender(id, password)
-    es.make_email('oceanfog1@gmail.com', 'oceanfog2@gmail.com')
-    es.send_email('hello test email', id, 'oceanfog1@gmail.com')
+    es.send_email('oceanfog1@gmail.com', 'oceanfog2@gmail.comg', '테스트', '내용 테스트')
