@@ -108,6 +108,8 @@ class ClassificationExcel:
                     cell.border = Border(left=Side(style='thin'), right=Side(style='thin'), top=Side(style='thin'),
                                          bottom=Side(style='thin'))
 
+
+
         wb.save(file_name)
         print(f'{file_name} 엑셀폼 변경 완료')
 
@@ -118,7 +120,7 @@ class ClassificationExcel:
         file_list = os.listdir(self.path)  # path폴더에 있는 파일을 리스트로 받기
         print(file_list)
 
-        for file_name in file_list[:2]:
+        for file_name in file_list:
             self.set_excel_form(f'{self.path}{file_name}')
 
 
