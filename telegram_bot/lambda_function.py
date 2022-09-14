@@ -1,10 +1,10 @@
 import requests
 import page_crawl
 
-codes = page_crawl.get_code()
+codes = page_crawl.get_finance_code()
 result = []
 for code in codes:
-    dic = page_crawl.get_crawl(code)
+    dic = page_crawl.get_finance_crawl(code)
     result.append(dic)
 # print(result)
 to_str = ''.join(str(e) for e in result)
