@@ -16,7 +16,12 @@ class EmailSender:
     def __init__(self, id, password):
         self.id = id
         self.password = password
-        self.smtp_server = self.smtp_server_map[id.split('@')[1]]
+        email_host = id.split('@')[1]
+        try:
+            self.smtp_server = self.smtp_server_map[email_host]
+        except Exception:
+            raise ValueError(f'smtp_server_map에서 {email_host}를 찾을 수 없습니다')
+
 
     def send_email(self, to, cc, title, text):
         fr = self.id
@@ -51,6 +56,7 @@ class EmailSender:
 if __name__ == '__main__':
     id = 'oceanfog1@gmail.com'
     id = 'oceanfog@naver.com'
+    id = 'oceanfog@coupang.com'
     password = getenv('MY_EMAIL_PASSWORD')
     es = EmailSender(id, password)
     es.send_email('oceanfog1@gmail.com', 'oceanfog2@gmail.comg', '테스트', '내용 테스트')
