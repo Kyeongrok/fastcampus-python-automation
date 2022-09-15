@@ -1,5 +1,3 @@
-import time
-
 from requests import get
 from bs4 import BeautifulSoup
 from urllib.parse import quote_plus
@@ -27,27 +25,31 @@ class TelegramContent:
         try:
             trade_year = res['realPriceInfo']['tradeBssYearList']
             trade_list = res['realPriceInfo']['list']
-            trade_contents =[]
+            trade_contents = []
             for item in trade_year:
                 trade_tmp = [item]
                 for keyword in trade_list:
                     if item == keyword['tradeBssYear']:
                         if list(keyword.values())[0][0]['tradTpCd'] == "A1":
                             tmp_dict = {'거래종류': '매매', '거래 일자': list(keyword.values())[0][0]['tradYm']+ list(keyword.values())[0][0]['tradeDate'], '가격': list(keyword.values())[0][0]['priceString']}
-                            trade_tmp.append(tmp_dict)
+                            tmp_state = f"[{tmp_dict['거래종류']}] {tmp_dict['거래 일자']} 가격: {tmp_dict['가격']}"
+                            trade_tmp.append(tmp_state)
                         elif list(keyword.values())[0][0]['tradTpCd'] == "B1":
                             tmp_dict = {'거래종류': '전세', '거래 일자': list(keyword.values())[0][0]['tradYm'] + list(keyword.values())[0][0]['tradeDate'], '가격': list(keyword.values())[0][0]['priceString']}
-                            trade_tmp.append(tmp_dict)
+                            tmp_state = f"[{tmp_dict['거래종류']}] {tmp_dict['거래 일자']} 가격: {tmp_dict['가격']}"
+                            trade_tmp.append(tmp_state)
                         elif list(keyword.values())[0][0]['tradTpCd'] == "B2":
                             tmp_dict = {'거래종류': '월세',
                                         '거래 일자': list(keyword.values())[0][0]['tradYm'] + list(keyword.values())[0][0][
                                             'tradeDate'], '가격': list(keyword.values())[0][0]['priceString']}
-                            trade_tmp.append(tmp_dict)
+                            tmp_state = f"[{tmp_dict['거래종류']}] {tmp_dict['거래 일자']} 가격: {tmp_dict['가격']}"
+                            trade_tmp.append(tmp_state)
                         elif list(keyword.values())[0][0]['tradTpCd'] == "B3":
                             tmp_dict = {'거래종류': '단기임대',
                                         '거래 일자': list(keyword.values())[0][0]['tradYm'] + list(keyword.values())[0][0][
                                             'tradeDate'], '가격': list(keyword.values())[0][0]['priceString']}
-                            trade_tmp.append(tmp_dict)
+                            tmp_state = f"[{tmp_dict['거래종류']}] {tmp_dict['거래 일자']} 가격: {tmp_dict['가격']}"
+                            trade_tmp.append(tmp_state)
                     else:
                         continue
                 trade_contents.append(trade_tmp)
@@ -78,6 +80,7 @@ if __name__ == "__main__":
     }
     final_result = """"""
     final_result += '삼성 힐스테이트' + '\n'
+    final_result += f'https://m.land.naver.com/complex/info/{building_list["삼성 힐스테이트"]}?ptpNo=1' + '\n'
     tc = TelegramContent(building_list['삼성 힐스테이트'])
     final_result += tc.info_to_str()
     print(final_result)
