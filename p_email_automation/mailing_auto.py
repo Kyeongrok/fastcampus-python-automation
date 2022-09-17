@@ -68,10 +68,7 @@ class SendEmail:
         #     msg.set_content(text)
 
         # 파일 첨부
-        files = list()
         if attachment:
-            print('check')
-            files.append(attachment)
             part = MIMEBase('application', "octet-steam")
             filenm = Path(attachment).name
             with open('./data/' + attachment, 'rb') as f:

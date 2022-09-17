@@ -11,7 +11,7 @@ class CreateEmailList:
         self.text = text#본문
         self.path = path
 
-    def set_filenames(self):
+    def make_email_info(self):
 
         print('ee')
         self.filenames = []
