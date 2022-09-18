@@ -19,7 +19,6 @@ class SendEmail:
         smtp_server_map = {
             'gmail.com':'smtp.gmail.com',
             'naver.com':'smtp.naver.com',
-            'outlook.com':'smtp-mail.outlook.com'
         }
         self.smtp_server = smtp_server_map[id.split('@')[1]]
 
