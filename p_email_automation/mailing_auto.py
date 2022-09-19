@@ -97,6 +97,7 @@ class SendEmail:
             smtp.ehlo()
             smtp.starttls()
             smtp.login(self.id, self.pw)
+
             smtp.sendmail(to_addrs=to, from_addr=fr, msg=msg.as_string())
             smtp.quit()
             # 완료 메시지

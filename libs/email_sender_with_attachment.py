@@ -5,8 +5,6 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
-from os.path import basename
-from pathlib import Path
 
 from openpyxl.reader.excel import load_workbook
 from datetime import datetime
@@ -22,18 +20,19 @@ class EmailSender:
     }
     smtp_server = None
     template_filename = None
+    path = None
 
-    def __init__(self, email_addr, password, manager_name, template_filename, attachment_path='data/'):
+    def __init__(self, email_addr, password, manager_name, template_filename, path='data/'):
         print('생성자')
         self.email_addr = email_addr
         self.manager_name = manager_name
-        if password == None or '':
-            raise Exception('password를 입력해주세요.')
         self.password = password
+        if password == None or password == '':
+            raise Exception('패스워드를 입력해주세요.')
         self.smtp_server = self.smtp_server_map[email_addr.split('@')[1]] # fc.krkim@gmail.com
         print(self.smtp_server)
         self.template_filename = template_filename
-        self.attachments_path = attachment_path
+        self.path = path
 
     def send_email(self, html_msg, from_addr, to_addr, receiver_name, subject, attachment):
 
@@ -44,15 +43,12 @@ class EmailSender:
             msg['Subject'] = subject + str(datetime.now())
             msg.attach(MIMEText(html_msg, 'html', 'utf-8'))
             if attachment:
-                print('basename:', basename(self.attachments_path + attachment))
-                with open(self.attachments_path + attachment, 'rb') as f:
-                    part = MIMEBase('application', "octet-steam")
+                with open(f'{self.path}{attachment}', 'rb') as f:
+                    part = MIMEBase('application', 'octet-steam')
                     part.set_payload(f.read())
-                    # part.add_header('Content-Disposition', 'attachment; filename="%s"' % filenm)
                     part.add_header('content-disposition', 'attachment', filename='%s' % attachment)
                     encode_base64(part)
                     msg.attach(part)
-
             smtp.starttls()
             smtp.login(self.email_addr, self.password)
             smtp.sendmail(from_addr=from_addr, to_addrs=to_addr, msg=msg.as_string())
@@ -80,5 +76,5 @@ class EmailSender:
 
 if __name__ == '__main__':
     # es = EmailSender('fc.krkim@gmail.com', os.getenv('MY_GMAIL_PASSWORD'))
-    es = EmailSender('oceanfog@naver.com', os.getenv('MY_NAVER_PASSWORD'), manager_name='김미령')
-    es.send_all_emails('이메일리스트_with_name.xlsx')
+    es = EmailSender('oceanfog@naver.com', os.getenv('MY_NAVER_PASSWORD'), manager_name='김미령', path='data220920/')
+    es.send_all_emails('이메일리스트_with_attachment.xlsx')
