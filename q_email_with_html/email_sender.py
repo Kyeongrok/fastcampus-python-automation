@@ -5,6 +5,7 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formataddr
+from os.path import basename
 from pathlib import Path
 
 from openpyxl.reader.excel import load_workbook
@@ -43,13 +44,15 @@ class EmailSender:
             msg['Subject'] = subject + str(datetime.now())
             msg.attach(MIMEText(html_msg, 'html', 'utf-8'))
             if attachment:
-                part = MIMEBase('application', "octet-steam")
                 filenm = Path(attachment).name
                 print('filenm:', filenm)
+                print('basename:', basename(self.attachments_path + attachment))
                 with open(self.attachments_path + attachment, 'rb') as f:
+                    part = MIMEBase('application', "octet-steam")
                     part.set_payload(f.read())
+                    # part.add_header('Content-Disposition', 'attachment; filename="%s"' % filenm)
+                    part.add_header('content-disposition', 'attachment', filename='%s' % filenm)
                     encode_base64(part)
-                    part.add_header('Content-Disposition', 'attachment; filename= "%s"' % filenm)
                     msg.attach(part)
 
             smtp.starttls()
